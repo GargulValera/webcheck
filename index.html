@@ -17,7 +17,6 @@
         <input type="tel" id="phone" placeholder="+7 999 000-00-00">
         <button onclick="sendPhone()">Продолжить</button>
     </div>
-
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
@@ -25,7 +24,7 @@
             let val = document.getElementById("phone").value;
             if(val.length > 5) {
                 tg.sendData("phone:" + val);
-                tg.close(); // Закрываем окно сразу после отправки номера
+                tg.close(); // Это закрывает окно и триггерит отправку кода в боте
             }
         }
     </script>
